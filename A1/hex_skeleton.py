@@ -102,3 +102,4 @@ class HexBoard:
                         print("- ", end="")
             print("|")
         print("   -----------------------")
+
