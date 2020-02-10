@@ -1,3 +1,4 @@
+# play hex: http://www.lutanho.net/play/hex.html
 class HexBoard:
     BLUE = 1
     RED = 2
