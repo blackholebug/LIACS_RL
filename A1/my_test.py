@@ -7,16 +7,14 @@ class Node:
         self.depth = current_depth
 
     def isLeaf():
-        if self.depth = search_depth
-            return True
+        if self.depth == search_depth:
+            return eval(self.position)
 
     def isMax():
-        if self.depth % 2 == 0:
-            return True
+        return True if self.depth % 2 == 0 else False
 
     def isMin():
-        if self.depth % 2 != 0:
-            return True
+        return True if self.depth % 2 != 0 else False
 
 # search-evaluate architecture
 
