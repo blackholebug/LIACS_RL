@@ -1,72 +1,71 @@
 import random
 from hex_skeleton import HexBoard
-
+import re
 import typing
+from itertools import product
 
-INF = 99999
+def to_move(c):
+    row, column = int(c[:-1]), ord(c[-1]) - ord('a')
+    return (row, column)
 
-def parse(c):
-    fil, rank = ord(c[0]) - ord('a'), int(c[1]) - 1
-    return A1 + fil - 10*rank
+def player_human(board: HexBoard) -> tuple:
+    # query the user until receving a (pseudo) legal move.
+    move = None
+    while True:
+        match = re.match('([0-9][0-9]*[a-z])', input('Your move: '))
+        if match:
+            move = to_move(match.group(0))
+            if move in product(range(board.size), range(board.size))\
+                and board.board[move] == HexBoard.EMPTY:
+                return move
+            else:
+                print("Please enter a correct coordinate again")
+        else:
+            print("Please enter a move like 2b")
 
+    return move
 
-def render(i):
-    rank, fil = divmod(i - A1, 10)
-    return chr(fil + ord('a')) + str(-rank + 1)
-
-
-def print_pos(pos):
-    print()
-    uni_pieces = {'R':'♜', 'N':'♞', 'B':'♝', 'Q':'♛', 'K':'♚', 'P':'♟',
-                  'r':'♖', 'n':'♘', 'b':'♗', 'q':'♕', 'k':'♔', 'p':'♙', '.':'·'}
-    for i, row in enumerate(pos.board.split()):
-        print(' ', 8-i, ' '.join(uni_pieces.get(p, p) for p in row))
-    print('    a b c d e f g h \n\n')
-
+def player_machine(board: HexBoard) -> tuple:
+    # search the board for the next move
+    move = None
+    return move
 
 def main():
-    hist = [Position(initial, 0, (True,True), (True,True), 0, 0)]
-    searcher = Searcher()
+    test_board = HexBoard(int(input("Enter the size of board as a number: ")))
+    print("""Please select a game mode: \n
+             \t Mode 1 ...... human vs human \n
+             \t Mode 2 ...... human vs machine(alpha-beta) \n
+             \t Mode 3 ...... machine(random) vs machine(alpha-beta) \n
+          """)
+    mode = input("Wich mode do you want to play? Please enter a number: ")
+    test_board.print()
+
+    is_fristplayer = True
     while True:
-        print_pos(hist[-1])
-
-        if hist[-1].score <= -MATE_LOWER:
-            print("You lost")
+        # first player use BLUE, second player use RED
+        player = HexBoard.BLUE if is_fristplayer else HexBoard.RED
+        # game play
+        print(f"Player {1+int(not is_fristplayer)} move:")
+        if mode == '1':
+            move = player_human(test_board)
+            test_board.place(move, player)
+            test_board.print()
+        elif mode == '2':
+            # NOTE: human plays first by default
+            move = player_human(test_board) if is_fristplayer else player_machine(test_board)
+            test_board.place(move, player)
+            test_board.print()
+        elif mode == '3':
+            move = player_machine(test_board)
+            test_board.place(move, player)
+            test_board.print()
+        # Check win
+        if test_board.is_game_over() == True:
+            print(f"Player {1+int(not is_fristplayer)} win!")
             break
-
-        # We query the user until she enters a (pseudo) legal move.
-        move = None
-        while move not in hist[-1].gen_moves():
-            match = re.match('([a-h][1-8])'*2, input('Your move: '))
-            if match:
-                move = parse(match.group(1)), parse(match.group(2))
-            else:
-                # Inform the user when invalid input (e.g. "help") is entered
-                print("Please enter a move like g8f6")
-        hist.append(hist[-1].move(move))
-
-        # After our move we rotate the board and print it again.
-        # This allows us to see the effect of our move.
-        print_pos(hist[-1].rotate())
-
-        if hist[-1].score <= -MATE_LOWER:
-            print("You won")
-            break
-
-        # Fire up the engine to look for a move.
-        start = time.time()
-        for _depth, move, score in searcher.search(hist[-1], hist):
-            if time.time() - start > 1:
-                break
-
-        if score == MATE_UPPER:
-            print("Checkmate!")
-
-        # The black player moves from a rotated position, so we have to
-        # 'back rotate' the move before printing it.
-        print("My move:", render(119-move[0]) + render(119-move[1]))
-        hist.append(hist[-1].move(move))
-
+        else:
+            # change player if not win
+            is_fristplayer = False if is_fristplayer == True else True
 
 if __name__ == '__main__':
     main()

@@ -12,7 +12,7 @@ class HexBoard:
             for y in range(board_size):
                 self.board[x, y] = HexBoard.EMPTY
 
-    def is_game_over():
+    def is_game_over(self):
         return self.game_over
 
     def is_empty(self, coordinates):
@@ -90,7 +90,8 @@ class HexBoard:
             for z in range(y):
                 print(" ", end="")
             for x in range(self.size):
-                piece = self.board[x, y]
+                # NOTE: This is [x, y] in original code
+                piece = self.board[y, x] 
                 if piece == HexBoard.BLUE:
                     print("b ", end="")
                 elif piece == HexBoard.RED:
