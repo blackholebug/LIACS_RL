@@ -1,66 +1,125 @@
 from board import HexBoard
+
 import numpy as np
-from itertools import product
+import networkx as nx
+from typing import Tuple, List
+from utils import INF, player_direction
+
+# evaluation function amplify own strength while diminishing enemy's
+
+
+def score_with_rivalry(board: HexBoard, friend: int) -> int:
+    C = 2  # adjust this parameter to change the importance ratio of friend's winning and enemy's lose
+    size = board.size
+    enemy = board.get_opposite_color(friend)
+    adj_matrix_friend = create_adj_matrix_scored(board, friend)
+    adj_matrix_enemy = create_adj_matrix_scored(board, enemy)
+    graph_friend = nx.Graph(adj_matrix_friend)
+    graph_enemy = nx.Graph(adj_matrix_enemy)
+    source = size * size
+    target = size * size + 1
+    try:
+        eval_score_friend = nx.dijkstra_path_length(
+            graph_friend, source, target)
+    except nx.exception.NetworkXNoPath:
+        eval_score_friend = INF  # NOTE: Change
+    try:
+        eval_score_enemy = nx.dijkstra_path_length(graph_enemy, source, target)
+    except nx.exception.NetworkXNoPath:
+        eval_score_enemy = INF  # NOTE: Change
+
+    eval_score = C * eval_score_friend - eval_score_enemy  # NOTE: Change
+
+    return eval_score
 
 
 # evaluation function
 def score(board: HexBoard, player: int) -> int:
-    adj_matrix = to_graph(board)
-    adj_matrix = add_edge_points(adj_matrix)
-    score = hash(adj_matrix) # TODO use the Dijkstra
+    size = board.size
+    adj_matrix = create_adj_matrix_scored(board, player)
+    G = nx.Graph(adj_matrix)
+    source = size * size
+    target = size * size + 1
+    try:
+        score = - nx.dijkstra_path_length(G, source, target)
+    except nx.exception.NetworkXNoPath:
+        score = - INF
+
     return score
 
-def to_graph(board: HexBoard) -> np.ndarray:
-    s = board.size
-    adj_matrix = np.full((s*s, s*s), np.inf)
-    for x, y in product(range(s), range(s)):
-        neighbors = board.get_neighbors((x,y))
-        for (i, j) in neighbors:
-            # TODO probably reduce extra check
-            if board.board[x, y] != HexBoard.EMPTY and \
-                board.board[x, y] == board.board[i, j]:
-                adj_matrix[x*s+y, i*s+j] = 0
-            elif board.board[x, y] * board.board[i, j] == HexBoard.RED * HexBoard.BLUE:
-                continue
-            else:
-                adj_matrix[x*s+y, i*s+j] = 1
+
+def index(coordinate: tuple, size: int) -> int:
+    return coordinate[0] + coordinate[1] * size
+
+
+# Blue
+def get_boarder_left_right(board: HexBoard) -> Tuple[List[int], List[int]]:
+    size = board.size
+    left_border = [index((0, y), size) for y in range(size)]
+    right_border = [index((size - 1, y), size) for y in range(size)]
+
+    return left_border, right_border
+
+
+# Red
+def get_boarder_top_down(board: HexBoard) -> Tuple[List[int], List[int]]:
+    size = board.size
+    top_border = [index((x, 0), size) for x in range(size)]
+    down_border = [index((x, size - 1), size) for x in range(size)]
+
+    return top_border, down_border
+
+
+def create_adj_matrix_scored(board: HexBoard, friend: int) -> np.ndarray:
+    """
+    computer's color is friend.
+    size * size is to walk through the whole board.
+    friend <-> friend: 1
+    friend <-> empty, empty <-> empty: size*size
+    enemy leaving unconnected : 0
+    """
+    size = board.size
+    path_len_board = size * size
+    adj_matrix = np.zeros(
+        (size * size + 2, size * size + 2)
+    )  # initial as all not connected
+    for point in board.board:
+        if board.board[point] == friend:
+            # neighbor is coordinate tuple
+            for neighbor in board.get_neighbors(point):
+                if board.board[neighbor] == friend:
+                    adj_matrix[index(point, size)][index(neighbor, size)] = 1
+                    adj_matrix[index(neighbor, size)][index(point, size)] = 1
+                elif board.board[neighbor] == board.EMPTY:
+                    adj_matrix[index(point, size)][
+                        index(neighbor, size)
+                    ] = path_len_board
+                    adj_matrix[index(neighbor, size)][
+                        index(point, size)
+                    ] = path_len_board
+        if board.board[point] == board.EMPTY:
+            for neighbor in board.get_neighbors(point):
+                if (
+                    board.board[neighbor] == board.EMPTY
+                    or board.board[neighbor] == friend
+                ):
+                    adj_matrix[index(point, size)][
+                        index(neighbor, size)
+                    ] = path_len_board
+                    adj_matrix[index(neighbor, size)][
+                        index(point, size)
+                    ] = path_len_board
+
+    # connect the external starting and ending point
+    if friend == HexBoard.BLUE:
+        a_boarder, b_boarder = get_boarder_left_right(board)
+    else:
+        a_boarder, b_boarder = get_boarder_top_down(board)
+    for i in a_boarder:
+        adj_matrix[size * size][i] = 1
+        adj_matrix[i][size * size] = 1
+    for i in b_boarder:
+        adj_matrix[size * size + 1][i] = 1
+        adj_matrix[i][size * size + 1] = 1
+
     return adj_matrix
-
-def add_edge_points(adj_matrix: np.ndarray) -> np.ndarray:
-    """
-    now only consider adding top and bottom points
-    """
-    mat_size = adj_matrix.shape[0]
-    board_size = int(mat_size ** 0.5)
-    new_mat = np.full((mat_size+2, mat_size+2), np.inf)
-    new_mat[:mat_size, :mat_size] = adj_matrix
-    new_mat[-2, :board_size] = np.zeros(board_size)
-    new_mat[-1, -2-board_size:-2] = np.zeros(board_size)
-    new_mat[:mat_size, -2:] = new_mat[-2:, :mat_size].T
-    return new_mat
-
-def test_score():
-    for i in range(0, 2):
-        winner = HexBoard.RED if i == 0 else HexBoard.BLUE
-        loser = HexBoard.BLUE if i == 0 else HexBoard.RED
-        board = HexBoard(3)
-        board.place((0, 2), winner)
-        board.place((1, 1), loser)
-        board.place((1, 0), winner)
-        board.place((2, 1), loser)
-        board.place((0, 1), winner)
-
-        print("The Adjacency Matrix is")
-        print(to_graph(board))
-        board.print()
-
-        board.place((2, 2), loser)
-        board.place((2, 0), winner)
-        board.place((1, 2), loser)
-
-        print("The Adjacency Matrix is")
-        print(to_graph(board))
-        board.print()
-
-        assert board.check_win(winner)
-        assert not board.check_win(loser)

@@ -1,8 +1,11 @@
 import numpy as np
 from board import HexBoard
+from evaluate import player_direction
 from move import Move, possible_moves
 
 # sanity check that playing using possible_moves list will end at some point
+
+
 def test_random():
     endable_board = HexBoard(4)
     while not endable_board.game_over:
@@ -61,3 +64,9 @@ def test_do():
     # taken thus this is possible
     Move(2, 2).do(board, HexBoard.BLUE)
     assert board.game_over
+    assert player_direction(HexBoard.BLUE) == "left right"
+    assert board.check_win(HexBoard.BLUE)
+
+
+if __name__ == "__main__":
+    test_do()

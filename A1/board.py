@@ -28,8 +28,9 @@ class HexBoard:
     def place(self, coordinates, color):
         if not self.game_over and self.board[coordinates] == HexBoard.EMPTY:
             self.board[coordinates] = color
-            if self.check_win(HexBoard.RED) or self.check_win(HexBoard.BLUE):  
-                # TODO replace with check_win(color)
+            if self.check_win(HexBoard.RED) or self.check_win(
+                HexBoard.BLUE
+            ):  # TODO replace with check_win(color)
                 self.game_over = True
 
     def get_opposite_color(self, current_color):
@@ -92,7 +93,7 @@ class HexBoard:
             for z in range(y):
                 print(" ", end="")
             for x in range(self.size):
-                piece = self.board[y, x] # NOTE: This is [x, y] in original code
+                piece = self.board[x, y]
                 if piece == HexBoard.BLUE:
                     print("b ", end="")
                 elif piece == HexBoard.RED:
