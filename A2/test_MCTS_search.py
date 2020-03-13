@@ -9,7 +9,7 @@ def test_MCTS_vs_deterministic():
     np.random.seed(4)  # make random gen determinstic
     board = HexBoard(2)
     while True:
-        best_move = MCTS(board, 10)
+        best_move = MCTS(board, 5)
         print(f"Best move: {best_move}")
         board.place(best_move, MAX)
         board.print()

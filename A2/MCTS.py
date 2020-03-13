@@ -11,7 +11,7 @@ class Node(object):
 
         self.state = None
         self.last_move = None
-        self.move_color = MAX
+        self.move_color = None
 
     def set_state(self, state):
         self.state = state

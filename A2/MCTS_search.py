@@ -52,12 +52,15 @@ def expand(node):
     # Create a deepcopy of board from parent
     new_state = copy.deepcopy(node.get_state())
     # Update the move color of new status
-    move_color = MAX if node.get_move_color == MIN else MIN
+    if node.get_move_color() == None:
+        move_color = MAX
+    else:
+        move_color = MAX if node.get_move_color() == MIN else MIN
     sub_node.set_move_color(move_color)
     # Do move on new status
     new_state.place(new_move, move_color)
     # Update last move of new status
-    node.set_last_move(new_move)  # TODO: make a sub class of HexBoard; integrate set_last_move()
+    sub_node.set_last_move(new_move)  # TODO: make a sub class of HexBoard; integrate set_last_move()
     # attach the new status to sub node
     sub_node.set_state(new_state)
     # add child to parent
@@ -75,8 +78,7 @@ def random_play(board, color):
     """    
     possible_moves = get_possible_moves(board)
     new_move = random.choice(possible_moves)
-    move_color = MAX if color == MIN else MIN
-    board.place(new_move, move_color)
+    board.place(new_move, color)
 
 
 def MCTS(board, max_iter):
@@ -88,7 +90,7 @@ def MCTS(board, max_iter):
 
         # Select
         # Check if the current node is the leaf node
-        while current_node.get_state().is_game_over() == False:
+        while not current_node.get_state().is_game_over():
             if current_node.is_all_expand():
                 # Node is fully expanded
                 current_node = UCTSelection(current_node, True)
@@ -102,10 +104,13 @@ def MCTS(board, max_iter):
         # Play-out
         current_state = current_node.get_state()
         play_board = copy.deepcopy(current_state)
+        play_color = current_node.get_move_color()
         # Run until the game over
-        while play_board.is_game_over() == False:
+        while not play_board.is_game_over():
             # Randomly play until game end
-            random_play(play_board, current_node.get_move_color)
+            play_color = MIN if play_color == MAX else MAX
+            random_play(play_board, play_color)
+            
         reward = 1 if play_board.check_win(MAX) else -1
 
         # Back propagation
@@ -119,6 +124,6 @@ def MCTS(board, max_iter):
             current_node = current_node.parent
 
     # After the iteration, get best move
-    selected_node = UCTSelection(current_node, False)
+    selected_node = UCTSelection(root_node, False)
     next_move = selected_node.get_last_move()
     return next_move
