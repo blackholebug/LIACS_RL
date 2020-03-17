@@ -36,6 +36,33 @@ def UCTSelection(node, is_exploration):
     return best_sub_node
 
 
+# def UCTSelection(node, is_exploration):
+#     best_score = -INF
+#     best_sub_node = None
+
+#     # Travel all sub nodes to find the best one
+#     for sub_node in node.get_children():
+
+#         # UCTSelection formular
+#         if is_exploration:
+#             C = 1 / math.sqrt(2.0)
+#             # UCB = quality / times + C * sqrt(2 * ln(total_times) / times)
+#             left = sub_node.get_quality_value() / sub_node.get_visit_times()
+#             right = 2.0 * math.log(node.get_visit_times()) / \
+#                 sub_node.get_visit_times()
+#             score = left + C * math.sqrt(right)
+
+#         # Choose the most frequently visited nodes
+#         else:
+#             score = sub_node.get_visit_times()
+
+#         if score > best_score:
+#             best_sub_node = sub_node
+#             best_score = score
+
+#     return best_sub_node
+
+
 def expand(node):
     tried_sub_node_moves = [
         sub_node.get_last_move() for sub_node in node.get_children()
@@ -110,8 +137,7 @@ def MCTS(board, max_iter):
             # Randomly play until game end
             play_color = MIN if play_color == MAX else MAX
             random_play(play_board, play_color)
-            
-        reward = 1 if play_board.check_win(MAX) else -1
+        reward = 1 if play_board.check_win(MAX) else 0
 
         # Back propagation
         # Update util the root node
