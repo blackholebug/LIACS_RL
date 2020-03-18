@@ -2,8 +2,9 @@ import numpy as np
 
 from board import HexBoard
 from move import get_possible_moves
-from search import lower_upper_search, player_color, MAX, MIN
+from search import lower_upper_search
 from evaluate import player_direction
+from utils import player_color, MAX, MIN
 
 # note random player on small board is quite hard?
 # looses for seed 0 wins for other seeds on board size 3

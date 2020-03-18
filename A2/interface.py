@@ -26,10 +26,9 @@ def player_human(board: HexBoard) -> tuple:
     return move
 
 
-def player_machine(board: HexBoard) -> tuple:
+def player_machine(board: HexBoard, memory: dict) -> tuple:
     # search the board for the next move
-    # tt = {"is_use": 1}
-    move = st.lower_upper_search(board, max_depth=4)
+    move = st.lower_upper_search(board, max_depth=4, memory=memory)
     # move = st.iterative_deeping_with_TT(board)
     return move
 
@@ -47,6 +46,8 @@ def main():
     test_board.print()
 
     is_first_player = True
+    tt = {"is_use": 1}
+
     while True:
         # first player use BLUE, second player use RED
         player = HexBoard.BLUE if is_first_player else HexBoard.RED
@@ -63,9 +64,11 @@ def main():
             test_board.print()
         elif mode == '2':
             # NOTE: human plays first by default
-            print("(Your direction: left-right)")
-            move = player_human(
-                test_board) if is_first_player else player_machine(test_board)
+            if is_first_player:
+                print("(Your direction: left-right)")
+            else:
+                print("(Your direction: top-bottom)")
+            move = player_human(test_board) if is_first_player else player_machine(test_board, tt)
             test_board.place(move, player)
             test_board.print()
         elif mode == '3':
