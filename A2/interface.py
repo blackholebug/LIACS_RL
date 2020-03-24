@@ -2,6 +2,7 @@ from board import HexBoard
 import re
 from itertools import product
 import search_with_TT as st
+import search_mcts as mcts
 
 
 def to_move(c):
@@ -26,9 +27,15 @@ def player_human(board: HexBoard) -> tuple:
     return move
 
 
-def player_machine(board: HexBoard, memory: dict) -> tuple:
+def player_alphabeta(board: HexBoard, memory: dict) -> tuple:
     # search the board for the next move
     move = st.lower_upper_search(board, max_depth=4, memory=memory)
+    # move = st.iterative_deeping_with_TT(board)
+    return move
+
+def player_mcts(board: HexBoard) -> tuple:
+    # search the board for the next move
+    move = mcts.mcts_search(board, max_depth=4, memory=memory)
     # move = st.iterative_deeping_with_TT(board)
     return move
 
@@ -38,11 +45,12 @@ def main():
     print("""Please select a game mode: \n
              \t Mode 1 ...... human vs human \n
              \t Mode 2 ...... human vs machine(alpha-beta) \n
-             \t Mode 3 ...... machine(random) vs machine(alpha-beta) \n
+             \t Mode 3 ...... human vs machine(MCTS) \n
+             \t Mode 4 ...... machine(random) vs machine(alpha-beta) \n
           """)
     mode = input(
         "Wich mode do you want to play? Please enter a number: \n >>> ")
-    assert mode == '1' or mode == '2' or mode == '3'
+    assert mode == '1' or mode == '2' or mode == '3' or mode == '4'
     test_board.print()
 
     is_first_player = True
@@ -68,11 +76,20 @@ def main():
                 print("(Your direction: left-right)")
             else:
                 print("(Your direction: top-bottom)")
-            move = player_human(test_board) if is_first_player else player_machine(test_board, tt)
+            move = player_human(test_board) if is_first_player else player_alphabeta(test_board, tt)
             test_board.place(move, player)
             test_board.print()
         elif mode == '3':
-            move = player_machine(test_board)
+            # NOTE: human plays first by default
+            if is_first_player:
+                print("(Your direction: left-right)")
+            else:
+                print("(Your direction: top-bottom)")
+            move = player_human(test_board) if is_first_player else player_machine(test_board, tt)
+            test_board.place(move, player)
+            test_board.print()
+        elif mode == '4':
+            move = player_alphabeta(test_board)
             test_board.place(move, player)
             test_board.print()
         # Check win

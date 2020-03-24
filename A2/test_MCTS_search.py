@@ -2,7 +2,7 @@ import numpy as np
 
 from board import HexBoard
 from move import get_possible_moves
-from MCTS_search import MCTS
+from search_mcts import mcts_search
 from search_with_TT import lower_upper_search
 from utils import MAX, MIN, player_color, player_direction
 
@@ -10,7 +10,7 @@ def test_MCTS_vs_non_deterministic():
     np.random.seed(4)  # make random gen determinstic
     board = HexBoard(6)
     while True:
-        best_move = MCTS(board, 500)
+        best_move = mcts_search(board, 500)
         print(f"Best move: {best_move}")
         board.place(best_move, MAX)
         board.print()
@@ -37,7 +37,7 @@ def test_MCTS_vs_minmax():
     board = HexBoard(6)
     tt = {"is_use": 1}
     while True:
-        best_move = MCTS(board, 7000)
+        best_move = mcts_search(board, 7000)
         print(f"MAX Best move: {best_move}")
         board.place(best_move, MAX)
         board.print()
@@ -73,7 +73,7 @@ def test_minmax_vs_MCTS():
         if board.game_over:
             break
         
-        best_move = MCTS(board, 7000)
+        best_move = mcts_search(board, 7000)
         print(f"MIN Best move: {best_move}")
         board.place(best_move, MIN)
         board.print()
