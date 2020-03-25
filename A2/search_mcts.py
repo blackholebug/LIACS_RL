@@ -71,7 +71,7 @@ def expand(node):
     possible_moves = get_possible_moves(node.get_state())
     new_move = random.choice(possible_moves)
 
-    # Check until get the new state which has the different action from others
+    # Make sure new move has not been tried before
     while new_move in tried_sub_node_moves:
         new_move = random.choice(possible_moves)
 

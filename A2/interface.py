@@ -35,8 +35,7 @@ def player_alphabeta(board: HexBoard, memory: dict) -> tuple:
 
 def player_mcts(board: HexBoard) -> tuple:
     # search the board for the next move
-    move = mcts.mcts_search(board, max_depth=4, memory=memory)
-    # move = st.iterative_deeping_with_TT(board)
+    move = mcts.mcts_search(board, max_iter=1000)
     return move
 
 
@@ -85,7 +84,7 @@ def main():
                 print("(Your direction: left-right)")
             else:
                 print("(Your direction: top-bottom)")
-            move = player_human(test_board) if is_first_player else player_machine(test_board, tt)
+            move = player_human(test_board) if is_first_player else player_mcts(test_board)
             test_board.place(move, player)
             test_board.print()
         elif mode == '4':

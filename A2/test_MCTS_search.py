@@ -6,31 +6,69 @@ from search_mcts import mcts_search
 from search_with_TT import lower_upper_search
 from utils import MAX, MIN, player_color, player_direction
 
-def test_MCTS_vs_non_deterministic():
-    np.random.seed(4)  # make random gen determinstic
-    board = HexBoard(6)
-    while True:
+def test_MCTS_on_endgame_1():
+    lose = 0
+    for i in range(1000):
+        np.random.seed()  # make random gen determinstic
+        board = HexBoard(4)
+        board.place((0, 1), MAX)
+        board.place((1, 1), MAX)
+        board.place((2, 2), MAX)
+        board.place((3, 2), MAX)
+        """
+        a b c d 
+        -----------------------
+        0 |- - - - |
+        1 | b b - - |
+        2 |  - - b b |
+        3 |   - - - - |
+        -----------------------
+        """
         best_move = mcts_search(board, 500)
-        print(f"Best move: {best_move}")
         board.place(best_move, MAX)
-        board.print()
 
-        if board.game_over:
-            break
+        if not board.check_win(MAX):
+            lose += 1
+            print(f"max color: {player_color(MAX)}")
+            print(f"max dir: {player_direction(MAX)}")
+            print(f"Best move: {best_move}")
+            print("final board:")
+            board.print()
 
-        moves = get_possible_moves(board)
-        random_move = moves[np.random.randint(0, len(moves))]
-        board.place(random_move, MIN)
-        board.print()
+    print(f"lose {lose} times in 1000 tries")
 
-        if board.game_over:
-            break
 
-    print(f"max color: {player_color(MAX)}")
-    print(f"max dir: {player_direction(MAX)}")
-    print("final board:")
-    board.print()
-    assert board.check_win(MAX)
+def test_MCTS_on_endgame_2():
+    lose = 0
+    for i in range(1000):
+        np.random.seed()  # make random gen determinstic
+        board = HexBoard(4)
+        board.place((0, 1), MAX)
+        board.place((1, 1), MAX)
+        board.place((2, 2), MAX)
+        board.place((3, 2), MAX)
+        """
+        a b c d 
+        -----------------------
+        0 |- - - - |
+        1 | b b - - |
+        2 |  - - b b |
+        3 |   - - - - |
+        -----------------------
+        """
+        best_move = mcts_search(board, 500)
+        board.place(best_move, )
+
+        if not board.check_win(MAX):
+            lose += 1
+            print(f"max color: {player_color(MAX)}")
+            print(f"max dir: {player_direction(MAX)}")
+            print(f"Best move: {best_move}")
+            print("final board:")
+            board.print()
+
+    print(f"lose {lose} times in 1000 tries")
+
 
 def test_MCTS_vs_minmax():
     np.random.seed(4)  # make random gen determinstic
@@ -89,4 +127,4 @@ def test_minmax_vs_MCTS():
 
 if __name__ == "__main__":
     # test_MCTS_vs_non_deterministic()
-    test_MCTS_vs_minmax()
+    test_MCTS_on_endgame_1()
