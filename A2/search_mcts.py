@@ -9,58 +9,29 @@ from utils import MAX, MIN, INF, player_color
 from move import get_possible_moves
 
 
-
-def UCTSelection(node, is_exploration):
+def Selection(node, is_exploration):
     best_score = -INF
     best_sub_node = None
 
     # Travel all sub nodes to find the best one
     for sub_node in node.get_children():
 
-        # Ignore exploration for inference
+        # UCB Selection formular
         if is_exploration:
             C = 1 / math.sqrt(2.0)
-        else:
-            C = 0.0
+            to_sqrt = 2.0 * math.log(node.get_visit_times()) / sub_node.get_visit_times()
+            # UCB score
+            score = sub_node.get_quality_value() / sub_node.get_visit_times() + C * math.sqrt(to_sqrt)
 
-        # UCB = quality / times + C * sqrt(2 * ln(total_times) / times)
-        left = sub_node.get_quality_value() / sub_node.get_visit_times()
-        right = 2.0 * math.log(node.get_visit_times()) / \
-            sub_node.get_visit_times()
-        score = left + C * math.sqrt(right)
+        # Choose the most frequently visited nodes
+        else:
+            score = sub_node.get_visit_times()
 
         if score > best_score:
             best_sub_node = sub_node
             best_score = score
 
     return best_sub_node
-
-
-# def UCTSelection(node, is_exploration):
-#     best_score = -INF
-#     best_sub_node = None
-
-#     # Travel all sub nodes to find the best one
-#     for sub_node in node.get_children():
-
-#         # UCTSelection formular
-#         if is_exploration:
-#             C = 1 / math.sqrt(2.0)
-#             # UCB = quality / times + C * sqrt(2 * ln(total_times) / times)
-#             left = sub_node.get_quality_value() / sub_node.get_visit_times()
-#             right = 2.0 * math.log(node.get_visit_times()) / \
-#                 sub_node.get_visit_times()
-#             score = left + C * math.sqrt(right)
-
-#         # Choose the most frequently visited nodes
-#         else:
-#             score = sub_node.get_visit_times()
-
-#         if score > best_score:
-#             best_sub_node = sub_node
-#             best_score = score
-
-#     return best_sub_node
 
 
 def expand(node):
@@ -120,7 +91,7 @@ def mcts_search(board, max_iter):
         while not current_node.get_state().is_game_over():
             if current_node.is_all_expand():
                 # Node is fully expanded
-                current_node = UCTSelection(current_node, True)
+                current_node = Selection(current_node, True)
 
             else:
                 # Expand
@@ -150,6 +121,6 @@ def mcts_search(board, max_iter):
             current_node = current_node.parent
 
     # After the iteration, get best move
-    selected_node = UCTSelection(root_node, False)
+    selected_node = Selection(root_node, False)
     next_move = selected_node.get_last_move()
     return next_move
