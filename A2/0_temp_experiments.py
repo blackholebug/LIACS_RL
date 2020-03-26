@@ -21,9 +21,9 @@ from MCTS import Node
 from search_mcts import expand, random_play
 
 ntrials = 100     # number of MCST-vs-Random_Player trials for each (N, Cp)
-N_vec = [500, 1000, 3000, 10000]    # all N (max iterations) values to be investigated
-SIZE = 5          # board size
-k_intervals = 20  
+N_vec = [3000]    # all N (max iterations) values to be investigated
+SIZE = 9          # board size
+k_intervals = 20
 Cp_vec = np.linspace(0.5, 1.5, 1+k_intervals)  # all Cp values to be investigated
 
 def UCT_select(node, Cp):
@@ -112,35 +112,7 @@ for N in N_vec:
             win_count += Sim_MCTS_Random(SIZE, N, Cp)
         win_rate.append(win_count/ntrials)
     # add a new column to the dataframe for each new N
-    D_vsRandom["N="+str(int(N))] = win_rate
 
-DF = pd.DataFrame(D_vsRandom)
-
-# print out the experiment results in LaTex format
-print(DF.to_latex(column_format="lc"+"r"*len(N_vec)))
-
-# save the experiment results as a dataframe
-DF.to_csv("N_Cp_5.csv", encoding='utf-8')
-
-# print out the optimal Cp value for each N
-
-for N in N_vec:
-    idx = D_vsRandom["N="+str(N)].index(max(D_vsRandom["N="+str(N)]))
-    C = Cp_vec[idx] 
-    print("When N = "+str(int(N))+", MCTS is most likely to beat a random player if Cp is set to be "+str(C)+".\n")
-
-# plot the experiment results: MCTS vs Randam Player
-
-fig, axs = plt.subplots(2, 2, figsize=(25,25))
-fig.suptitle('MCTS vs Random Player: '+str(int(SIZE))+"-by-"+str(int(SIZE))+" Board")
-
-for i in range(2):
-    for j in range(2):
-        N = int(N_vec[2*i+j])
-        axs[i,j].plot(Cp_vec, D["N="+str(N)])
-        axs[i,j].set_title("N = "+str(N))
-        axs[i,j].set_xlabel('Cp')
-        axs[i,j].set_ylabel('Win Rate')
-
-plt.savefig("vsRandom.eps")
+win_rate_array = np.array(win_rate)
+np.savetxt('res.csv', win_rate_array, delimiter=',')
 
