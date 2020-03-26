@@ -40,6 +40,10 @@ class Node(object):
     def get_children(self):
         return self.children
 
+    def add_child(self, sub_node):
+        sub_node.set_parent(self)
+        self.children.append(sub_node)
+        
     def get_visit_times(self):
         return self.visit_times
 
@@ -60,10 +64,6 @@ class Node(object):
 
     def is_all_expand(self):
         return len(self.children) == len(move.get_possible_moves(self.state))
-
-    def add_child(self, sub_node):
-        sub_node.set_parent(self)
-        self.children.append(sub_node)
 
     def __repr__(self):
         return "Node: {}, Q/N: {}/{}, state: {}".format(

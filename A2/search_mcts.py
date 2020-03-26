@@ -9,18 +9,18 @@ from utils import MAX, MIN, INF, player_color
 from move import get_possible_moves
 
 
-def Selection(node, is_exploration):
+def select(node, is_exploration):
     best_score = -INF
     best_sub_node = None
 
     # Travel all sub nodes to find the best one
     for sub_node in node.get_children():
 
-        # UCB Selection formular
+        # UCT Selection formular
         if is_exploration:
             C = 1 / math.sqrt(2.0)
             to_sqrt = 2.0 * math.log(node.get_visit_times()) / sub_node.get_visit_times()
-            # UCB score
+            # UCT score
             score = sub_node.get_quality_value() / sub_node.get_visit_times() + C * math.sqrt(to_sqrt)
 
         # Choose the most frequently visited nodes
@@ -87,15 +87,13 @@ def mcts_search(board, max_iter):
         current_node = root_node
 
         # Select
-        # Check if the current node is the leaf node
         while not current_node.get_state().is_game_over():
+            # Go deep in the search tree when all subnodes are expanded
             if current_node.is_all_expand():
-                # Node is fully expanded
-                current_node = Selection(current_node, True)
-
+                current_node = select(current_node, True)
+            # Expand
             else:
-                # Expand
-                # Update the current node to a new sub node
+                # Update the current node to a new sub node when finding a node not fully expanded
                 current_node = expand(current_node)
                 break
 
@@ -103,15 +101,14 @@ def mcts_search(board, max_iter):
         current_state = current_node.get_state()
         play_board = copy.deepcopy(current_state)
         play_color = current_node.get_move_color()
-        # Run until the game over
+        # Play randomly until the game over
         while not play_board.is_game_over():
-            # Randomly play until game end
+            # Change the piece color
             play_color = MIN if play_color == MAX else MAX
             random_play(play_board, play_color)
         reward = 1 if play_board.check_win(MAX) else 0
 
         # Back propagation
-        # Update util the root node
         while current_node != None:
             # Update the visit times
             current_node.visit_times_add_one()
@@ -121,6 +118,6 @@ def mcts_search(board, max_iter):
             current_node = current_node.parent
 
     # After the iteration, get best move
-    selected_node = Selection(root_node, False)
+    selected_node = select(root_node, False)
     next_move = selected_node.get_last_move()
     return next_move
