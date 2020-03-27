@@ -39,35 +39,36 @@ def test_MCTS_on_endgame_1():
 
 
 def test_MCTS_on_endgame_2():
-    lose = 0
+    count_1 = 0
+    count_2 = 0
     for i in range(1000):
         np.random.seed()  # make random gen determinstic
-        board = HexBoard(4)
-        board.place((0, 1), MAX)
-        board.place((1, 1), MAX)
+        board = HexBoard(5)
+        board.place((1, 2), MAX)
         board.place((2, 2), MAX)
-        board.place((3, 2), MAX)
+        board.place((2, 3), MAX)
+        board.place((2, 4), MAX)
+        board.place((0, 0), MIN)
+        board.place((0, 2), MIN)
+        board.place((0, 3), MIN)
+        board.place((0, 4), MIN)
         """
-        a b c d 
+        a b c d e
         -----------------------
-        0 |- - - r |
-        1 | b b - r |
-        2 |  - b r b |
-        3 |   - r - - |
+        0 |r - - - - |
+        1 | - - - - - |
+        2 |  r b b b b |
+        3 |   r - - - - |
+        4 |    r - - - - |
         -----------------------
         """
-        best_move = mcts_search(board, 500)
-        board.place(best_move, )
+        best_move = mcts_search(board, 1000)
+        if best_move == (0, 1):
+            count_1 += 1
+        if best_move == (1, 1):
+            count_2 += 1
 
-        if not board.check_win(MAX):
-            lose += 1
-            print(f"max color: {player_color(MAX)}")
-            print(f"max dir: {player_direction(MAX)}")
-            print(f"Best move: {best_move}")
-            print("final board:")
-            board.print()
-
-    print(f"lose {lose} times in 1000 tries")
+    print(f"{count_1} times find the best place, {count_2} times find a fair place")    
 
 
 def test_MCTS_vs_minmax():
@@ -126,5 +127,6 @@ def test_minmax_vs_MCTS():
     # assert board.check_win(MAX)
 
 if __name__ == "__main__":
-    # test_MCTS_vs_non_deterministic()
+    # test_minmax_vs_MCTS()
     test_MCTS_on_endgame_1()
+    test_MCTS_on_endgame_2()
