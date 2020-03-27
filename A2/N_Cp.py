@@ -126,8 +126,8 @@ plt.show()
 
 ntrials = 60     # number of MCST-vs-Random_Player trials for each (N, Cp)
 N_vec = [500, 1000, 3000, 5000]    # all N (max iterations) values to be investigated
-SIZE = 5          # board size
-k_intervals = 10  
+SIZE = 9          # board size
+k_intervals = 20  
 Cp_vec = np.linspace(0.5, 1.5, 1+k_intervals)  # all Cp values to be investigated
 
 
