@@ -65,8 +65,8 @@ def MCTS_N_Cp(board, N, Cp):
         reward = 1 if play_board.check_win(MAX) else 0
         # back propagation
         while current_node != None:
-            current_node.visit_times_add_one()
-            current_node.quality_value_add_n(reward)
+            current_node.add_visit_times()
+            current_node.add_quality_value(reward)
             current_node = current_node.parent
     
     # get best move after iteration

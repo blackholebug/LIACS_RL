@@ -50,7 +50,7 @@ class Node(object):
     def set_visit_times(self, times):
         self.visit_times = times
 
-    def visit_times_add_one(self):
+    def add_visit_times(self):
         self.visit_times += 1
 
     def get_quality_value(self):
@@ -59,7 +59,7 @@ class Node(object):
     def set_quality_value(self, value):
         self.quality_value = value
 
-    def quality_value_add_n(self, n):
+    def add_quality_value(self, n):
         self.quality_value += n
 
     def is_all_expand(self):

@@ -10,6 +10,15 @@ from move import get_possible_moves
 
 
 def select(node, is_exploration):
+    """select operation
+    
+    Arguments:
+        node {Node} -- a node object as root node
+        is_exploration {bool} -- judge if iterations are completed or not
+    
+    Returns:
+        best_sub_node {Node} -- the selected sub node
+    """    
     best_score = -INF
     best_sub_node = None
 
@@ -35,6 +44,14 @@ def select(node, is_exploration):
 
 
 def expand(node):
+    """expand operation
+    
+    Arguments:
+        node {Node} -- a node object to expand
+    
+    Returns:
+        sub_node {Node} -- a node object as the expanded subnode
+    """    
     tried_sub_node_moves = [
         sub_node.get_last_move() for sub_node in node.get_children()
     ]
@@ -80,6 +97,15 @@ def random_play(board, color):
 
 
 def mcts_search(board, max_iter):
+    """mcts search function
+    
+    Arguments:
+        board {HexBoard} -- a HexBoard object as the original state
+        max_iter {int} -- number of max iteration 
+    
+    Returns:
+        next_move {tuple} -- the coordinate of predicted best move
+    """    
     root_node = Node()
     root_node.set_state(board)
 
@@ -111,9 +137,9 @@ def mcts_search(board, max_iter):
         # Back propagation
         while current_node != None:
             # Update the visit times
-            current_node.visit_times_add_one()
+            current_node.add_visit_times()
             # Update the quality value
-            current_node.quality_value_add_n(reward)
+            current_node.add_quality_value(reward)
             # Change the node to the parent node
             current_node = current_node.parent
 
