@@ -20,11 +20,14 @@ from utils import MAX, MIN, INF, player_color, player_direction
 from MCTS import Node
 from search_mcts import expand, random_play
 
+
 ntrials = 60     # number of MCST-vs-Random_Player trials for each (N, Cp)
 N_vec = [500, 1000, 3000, 5000]    # all N (max iterations) values to be investigated
 SIZE = 5          # board size
 k_intervals = 10  
 Cp_vec = np.linspace(0.5, 1.5, 1+k_intervals)  # all Cp values to be investigated
+
+
 
 def UCT_select(node, Cp):
     # initialize variables to be updated
@@ -40,7 +43,10 @@ def UCT_select(node, Cp):
         if score > best_score:
             best_sub_node = sub_node
             best_score = score
+    
     return best_sub_node
+
+
 
 def MCTS_N_Cp(board, N, Cp):
 
@@ -76,6 +82,9 @@ def MCTS_N_Cp(board, N, Cp):
     
     return next_move
 
+
+
+
 def Sim_MCTS_Random(size, N, Cp):
 
     board = HexBoard(size)
@@ -101,8 +110,13 @@ def Sim_MCTS_Random(size, N, Cp):
     else:
         return 0
 
+    
+    
+    
 # store in a dictionary the experiment results
 D_vsRandom = {"Cp":Cp_vec} 
+
+
 
 for N in N_vec:
     win_rate = list()
@@ -114,26 +128,24 @@ for N in N_vec:
     # add a new column to the dataframe for each new N
     D_vsRandom["N="+str(int(N))] = win_rate
 
+    
 DF = pd.DataFrame(D_vsRandom)
-
 # print out the experiment results in LaTex format
 print(DF.to_latex(column_format="lc"+"r"*len(N_vec)))
-
 # save the experiment results as a dataframe
 DF.to_csv("N_Cp_5.csv", encoding='utf-8')
 
-# print out the optimal Cp value for each N
 
+# print out the optimal Cp value for each N
 for N in N_vec:
     idx = D_vsRandom["N="+str(N)].index(max(D_vsRandom["N="+str(N)]))
     C = Cp_vec[idx] 
     print("When N = "+str(int(N))+", MCTS is most likely to beat a random player if Cp is set to be "+str(C)+".\n")
 
+    
 # plot the experiment results: MCTS vs Randam Player
-
 fig, axs = plt.subplots(2, 2, figsize=(25,25))
 fig.suptitle('MCTS vs Random Player: '+str(int(SIZE))+"-by-"+str(int(SIZE))+" Board")
-
 for i in range(2):
     for j in range(2):
         N = int(N_vec[2*i+j])
@@ -141,6 +153,5 @@ for i in range(2):
         axs[i,j].set_title("N = "+str(N))
         axs[i,j].set_xlabel('Cp')
         axs[i,j].set_ylabel('Win Rate')
-
 plt.savefig("vsRandom.eps")
 
