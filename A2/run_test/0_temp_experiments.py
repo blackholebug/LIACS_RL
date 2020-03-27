@@ -24,7 +24,7 @@ ntrials = 60     # number of MCST-vs-Random_Player trials for each (N, Cp)
 N_vec = [5000]    # all N (max iterations) values to be investigated
 SIZE = 9          # board size
 k_intervals = 20
-Cp_vec = [1.5]  # all Cp values to be investigated
+Cp_vec = np.linspace(0.5, 1.5, 1+k_intervals)  # all Cp values to be investigated
 
 def UCT_select(node, Cp):
     # initialize variables to be updated
@@ -114,5 +114,5 @@ for N in N_vec:
     # add a new column to the dataframe for each new N
 
 win_rate_array = np.array(win_rate)
-np.savetxt('res_21.csv', win_rate_array, delimiter=',')
+np.savetxt('res.csv', win_rate_array, delimiter=',')
 
