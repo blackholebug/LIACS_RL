@@ -21,13 +21,6 @@ from MCTS import Node
 from search_mcts import expand, random_play
 
 
-ntrials = 60     # number of MCST-vs-Random_Player trials for each (N, Cp)
-N_vec = [500, 1000, 3000, 5000]    # all N (max iterations) values to be investigated
-SIZE = 5          # board size
-k_intervals = 10  
-Cp_vec = np.linspace(0.5, 1.5, 1+k_intervals)  # all Cp values to be investigated
-
-
 
 def UCT_select(node, Cp):
     # initialize variables to be updated
@@ -112,10 +105,35 @@ def Sim_MCTS_Random(size, N, Cp):
 
     
     
-    
+# explore the convergence of win rate for (N=500, Cp=1) on a 5-by-5 board
+win_rate = list()
+win_count = 0
+for t in range(100):
+    win_count += Sim_MCTS_Random(5, 500, 1)
+    win_rate.append(win_count/(t+1))
+# plot the dynamic win rate as the number of simulations increases
+plt.figure()
+plt.plot([t+1 for t in range(100)], win_rate)
+plt.title("Asymptotic Property of Win Rate")
+plt.xlabel("Number of Simulations")
+plt.ylabel("Win Rate of MCTS")
+plt.ylim(0.8,1.05)
+plt.vlines(x=60, ymin=0.8, ymax=1, colors="r", linestyles=":")
+plt.hlines(y=win_rate[60], xmin=1, xmax=100, colors="y", linestyles=":")
+plt.savefig("Win_Rate_Convergence.eps")
+plt.show()
+
+
+ntrials = 60     # number of MCST-vs-Random_Player trials for each (N, Cp)
+N_vec = [500, 1000, 3000, 5000]    # all N (max iterations) values to be investigated
+SIZE = 5          # board size
+k_intervals = 10  
+Cp_vec = np.linspace(0.5, 1.5, 1+k_intervals)  # all Cp values to be investigated
+
+
+
 # store in a dictionary the experiment results
 D_vsRandom = {"Cp":Cp_vec} 
-
 
 
 for N in N_vec:
