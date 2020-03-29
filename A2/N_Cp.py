@@ -21,6 +21,10 @@ from MCTS import Node
 from search_mcts import expand, random_play
 
 
+####################################################################
+#Define Functions
+####################################################################
+
 
 def UCT_select(node, Cp):
     # initialize variables to be updated
@@ -104,7 +108,11 @@ def Sim_MCTS_Random(size, N, Cp):
         return 0
 
     
-    
+##########################################################################
+#Preliminary Trials
+##########################################################################
+
+
 # explore the convergence of win rate for (N=500, Cp=1) on a 5-by-5 board
 win_rate = list()
 win_count = 0
@@ -124,12 +132,47 @@ plt.savefig("Win_Rate_Convergence.eps")
 plt.show()
 
 
+# explore the computational cost of doing experiments
+# estimate the average time for a play-out against random player with respect to N and board size
+
+size_vec = [5, 6, 7, 8, 9]
+N_vec = [500, 1000, 3000, 5000, 10000]
+TIME = dict()
+TIME["Board Size"] = size_vec
+
+for N in N_vec:
+    time = list()
+    for size in size_vec:
+        t1 = process_time()
+        for i in range(10):                  # simulate 10 play-outs and output the average time
+            Sim_MCTS_Random(size, N, 1)
+        t2 = process_time()
+        delta = round((t2-t1)/10, 2)
+        time.append(str(delta)+" seconds")
+    TIME["N="+str(int(N))] = time
+
+DF = pd.DataFrame(TIME)
+print(DF)
+print(DF.to_latex(column_format="lc"+"r"*len(N_vec)))
+DF.to_csv("Preliminary_Time.csv", encoding='utf-8')
+
+
+
+########################################################
+# Parameters
+########################################################
+
+
 ntrials = 60     # number of MCST-vs-Random_Player trials for each (N, Cp)
 N_vec = [500, 1000, 3000, 5000]    # all N (max iterations) values to be investigated
 SIZE = 9          # board size
 k_intervals = 20  
 Cp_vec = np.linspace(0.5, 1.5, 1+k_intervals)  # all Cp values to be investigated
 
+
+#########################################################
+# Experiments
+#########################################################
 
 
 # store in a dictionary the experiment results
@@ -151,7 +194,7 @@ DF = pd.DataFrame(D_vsRandom)
 # print out the experiment results in LaTex format
 print(DF.to_latex(column_format="lc"+"r"*len(N_vec)))
 # save the experiment results as a dataframe
-DF.to_csv("N_Cp_5.csv", encoding='utf-8')
+DF.to_csv("N_Cp_9.csv", encoding='utf-8')
 
 
 # print out the optimal Cp value for each N
