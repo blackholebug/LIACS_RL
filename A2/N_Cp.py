@@ -13,6 +13,7 @@ import pandas as pd
 import random
 import math
 import copy
+from time import process_time
 
 from board import HexBoard
 from move import get_possible_moves
