@@ -137,7 +137,7 @@ plt.show()
 # estimate the average time for a play-out against random player with respect to N and board size
 
 size_vec = [5, 6, 7, 8, 9]
-N_vec = [500, 1000, 3000, 5000, 10000]
+N_vec = [500, 1000, 3000, 5000]
 TIME = {"Board Size":size_vec}
 
 for N in N_vec:
@@ -164,7 +164,6 @@ DF.to_csv("Preliminary_Time.csv", encoding='utf-8')
 
 
 ntrials = 60     # number of MCST-vs-Random_Player trials for each (N, Cp)
-N_vec = [500, 1000, 3000, 5000]    # all N (max iterations) values to be investigated
 SIZE = 6          # board size
 k_intervals = 20  
 Cp_vec = np.linspace(0.5, 1.5, 1+k_intervals)  # all Cp values to be investigated
