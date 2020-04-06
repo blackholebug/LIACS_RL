@@ -138,8 +138,7 @@ plt.show()
 
 size_vec = [5, 6, 7, 8, 9]
 N_vec = [500, 1000, 3000, 5000, 10000]
-TIME = dict()
-TIME["Board Size"] = size_vec
+TIME = {"Board Size":size_vec}
 
 for N in N_vec:
     time = list()
@@ -166,7 +165,7 @@ DF.to_csv("Preliminary_Time.csv", encoding='utf-8')
 
 ntrials = 60     # number of MCST-vs-Random_Player trials for each (N, Cp)
 N_vec = [500, 1000, 3000, 5000]    # all N (max iterations) values to be investigated
-SIZE = 9          # board size
+SIZE = 6          # board size
 k_intervals = 20  
 Cp_vec = np.linspace(0.5, 1.5, 1+k_intervals)  # all Cp values to be investigated
 
@@ -197,16 +196,9 @@ print(DF.to_latex(column_format="lc"+"r"*len(N_vec)))
 # save the experiment results as a dataframe
 DF.to_csv("N_Cp_9.csv", encoding='utf-8')
 
-
-# print out the optimal Cp value for each N
-for N in N_vec:
-    idx = D_vsRandom["N="+str(N)].index(max(D_vsRandom["N="+str(N)]))
-    C = Cp_vec[idx] 
-    print("When N = "+str(int(N))+", MCTS is most likely to beat a random player if Cp is set to be "+str(C)+".\n")
-
     
 # plot the experiment results: MCTS vs Randam Player
-fig, axs = plt.subplots(2, 2, figsize=(25,25))
+fig, axs = plt.subplots(2, 2, figsize=(10,10))
 fig.suptitle('MCTS vs Random Player: '+str(int(SIZE))+"-by-"+str(int(SIZE))+" Board")
 for i in range(2):
     for j in range(2):
@@ -215,5 +207,6 @@ for i in range(2):
         axs[i,j].set_title("N = "+str(N))
         axs[i,j].set_xlabel('Cp')
         axs[i,j].set_ylabel('Win Rate')
-plt.savefig("vsRandom.eps")
+        axs[i,j].set_ylim(0.85, 1.01)
+        plt.savefig("vsRandom.eps")
 
