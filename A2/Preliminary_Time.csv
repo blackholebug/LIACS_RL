@@ -1,0 +1,6 @@
+,Board Size,N=500,N=1000,N=3000,N=5000
+0,5,7.37 seconds,13.3 seconds,38.61 seconds,62.96 seconds
+1,6,17.5 seconds,33.45 seconds,91.92 seconds,136.18 seconds
+2,7,52.77 seconds,85.73 seconds,272.59 seconds,386.29 seconds
+3,8,116.6 seconds,197.68 seconds,615.78 seconds,809.11 seconds
+4,9,229.25 seconds,418.75 seconds,1585.73 seconds,1688.72 seconds
