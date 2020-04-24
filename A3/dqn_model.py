@@ -32,8 +32,8 @@ class DQNTrain():
         self.save_log = save_log
         self.save_weights = save_weights
         self.save_path = "./output/train"
-        self.model_path = self.save_path + "/models/ddqn/" + self.logger.timestamp() + "/model.h5"
         self.logger = Logger(game_name + "Train", self.save_path + "/logs/ddqn/")
+        self.model_path = self.save_path + "/models/ddqn/" + self.logger.timestamp() + "/model.h5"
 
     def get_action(self, state):
         if np.random.uniform() < self.epsilon or len(self.memory.replays) < REPLAY_START_NUMBER:
@@ -61,9 +61,10 @@ class DQNTrain():
         if len(self.memory.replays) < REPLAY_START_NUMBER:
             return
 
-        if total_step % TRAINING_FREQUENCY == 0 and self.save_log:
+        if total_step % TRAINING_FREQUENCY == 0:
             loss, accuracy = self.learn()
-            self.log_model_status(loss, accuracy)
+            if self.save_log:
+                self.log_model_status(loss, accuracy)
 
         self.update_epsilon()
 
