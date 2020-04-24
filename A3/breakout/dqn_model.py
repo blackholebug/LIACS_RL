@@ -32,8 +32,10 @@ class DQNTrain():
         self.save_log = save_log
         self.save_weights = save_weights
         self.save_path = "./output/train"
-        self.logger = Logger(game_name + "Train", self.save_path + "/logs/ddqn/")
-        self.model_path = self.save_path + "/models/ddqn/" + self.logger.timestamp() + "/model.h5"
+        self.logger = Logger(game_name + "Train",
+                             self.save_path + "/logs/ddqn/")
+        self.model_path = self.save_path + "/models/ddqn/" + self.logger.timestamp() + \
+            "/model.h5"
 
     def get_action(self, state):
         if np.random.uniform() < self.epsilon or len(self.memory.replays) < REPLAY_START_NUMBER:
@@ -74,7 +76,7 @@ class DQNTrain():
         if total_step % TARGET_NETWORK_UPDATE_FREQUENCY == 0:
             self.update_target_weights()
 
-    def learn(self, mode=2015):
+    def learn(self, mode="nature"):
         batch = self.memory.gen_batch()
 
         states = []
@@ -88,20 +90,19 @@ class DQNTrain():
                 record["next_state"]).astype(np.float64), axis=0)
 
             q = list(self.ddqn_eval.predict(state)[0])
-            if mode == 2015:
+            if mode == "nature":
                 q[record["action"]] = record["reward"] + (1 - record["terminal"]) * GAMMA * np.max(
                     self.ddqn_target.predict(next_state).ravel())
-            elif mode == 2013:
+            elif mode == "vanilla":
                 q[record["action"]] = record["reward"] + \
                     (1 - record["terminal"]) * GAMMA * \
                     np.max(self.ddqn.predict(next_state).ravel())
-            elif mode == 2016:
+            elif mode == "double":
                 next_max_action = np.argmax(
                     self.ddqn.predict(next_state).ravel())
                 q[record["action"]] = record["reward"] + \
                     (1 - record["terminal"]) * GAMMA * \
-                    self.ddqn_target.predict(next_state).ravel()[
-                    next_max_action]
+                    self.ddqn_target.predict(next_state).ravel()[next_max_action]
 
             q_values.append(q)
 
@@ -141,6 +142,7 @@ class DQNTest():
             np.asarray(state).astype(np.float64), axis=0), batch_size=1)
         return np.argmax(q_values[0])
 
-    def log_model_status(self, loss, accuracy):
-        self.logger.add_loss(loss)
-        self.logger.add_accuracy(accuracy)
+    def log_game_status(self, score, step, gameover):
+        self.logger.add_score(score)
+        self.logger.add_step(step)
+        self.logger.add_gameover(gameover)
