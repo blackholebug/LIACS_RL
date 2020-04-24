@@ -32,8 +32,8 @@ class DQNTrain():
         self.save_log = save_log
         self.save_weights = save_weights
         self.save_path = "./output/train"
-        self.logger = Logger(game_name + "Train",
-                             self.save_path + "/logs/ddqn/")
+        self.model_path = self.save_path + "/models/ddqn/" + self.logger.timestamp() + "/model.h5"
+        self.logger = Logger(game_name + "Train", self.save_path + "/logs/ddqn/")
 
     def get_action(self, state):
         if np.random.uniform() < self.epsilon or len(self.memory.replays) < REPLAY_START_NUMBER:
@@ -49,12 +49,10 @@ class DQNTrain():
             self.epsilon = EPSILON_MIN
 
     def save_model(self):
-        model_path = self.save_path + "/models/ddqn/" + self.logger.timestamp() + \
-            "/model.h5"
-        if os.path.exists(os.path.dirname(model_path)):
-            shutil.rmtree(os.path.dirname(model_path), ignore_errors=True)
-        os.makedirs(os.path.dirname(model_path))
-        self.ddqn_eval.save_weights(model_path)
+        if os.path.exists(os.path.dirname(self.model_path)):
+            shutil.rmtree(os.path.dirname(self.model_path), ignore_errors=True)
+        os.makedirs(os.path.dirname(self.model_path))
+        self.ddqn_eval.save_weights(self.model_path)
 
     def update_target_weights(self):
         self.ddqn_target.set_weights(self.ddqn_eval.get_weights())
