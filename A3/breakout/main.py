@@ -18,11 +18,12 @@ if __name__ == "__main__":
     action_space = env.action_space.n
     img_size = 84
     input_shape = (action_space, img_size, img_size)
+    testing_model_path = ""
 
     # generate model
     is_train = True
     model = DQNTrain(game_name, input_shape, action_space) if is_train else DQNTest(
-        game_name, input_shape, action_space)
+                        game_name, input_shape, action_space, testing_model_path)
 
     # iteration of updating the Q table
     gameover = 0
