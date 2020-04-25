@@ -18,9 +18,9 @@ fact, than a human would need to learn the same games. How can people learn so
 quickly? Part of the answer may be that people can learn how the game works and
 predict which actions will lead to desirable outcomes. In this paper, we explore how
 video prediction models can similarly enable agents to solve Atari games with fewer
-interactions than model-free methods. We describe Simulated Policy Learning
-(SimPLe), a complete model-based deep RL algorithm based on video prediction
-models and present a comparison of several model architectures, including a novel
+interactions than model-free methods. We describe **Simulated Policy Learning
+(SimPLe)**, a complete **model-based deep RL algorithm based on video prediction
+models** and present a comparison of several model architectures, including a novel
 architecture that yields the best results in our setting. Our experiments evaluate
 SimPLe on a range of Atari games in low data regime of 100k interactions between
 the agent and the environment, which corresponds to two hours of real-time play.
