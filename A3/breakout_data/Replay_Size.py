@@ -24,7 +24,8 @@ def convert(Array, beta):
 	    m += 1
 	y.append(np.mean(lst))
 	k += 1
-		
+    return(y)
+
 min_L = 999999999
 max_score = 0
 for size in replay_size:
