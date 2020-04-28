@@ -90,19 +90,16 @@ class DQNTrain():
                 record["next_state"]).astype(np.float64), axis=0)
 
             q = list(self.ddqn_eval.predict(state)[0])
+            
             if mode == "nature":
-                q[record["action"]] = record["reward"] + (1 - record["terminal"]) * GAMMA * np.max(
-                    self.ddqn_target.predict(next_state).ravel())
+                next_q = np.max(self.ddqn_target.predict(next_state).ravel())
             elif mode == "vanilla":
-                q[record["action"]] = record["reward"] + \
-                    (1 - record["terminal"]) * GAMMA * \
-                    np.max(self.ddqn.predict(next_state).ravel())
+                next_q = np.max(self.ddqn_eval.predict(next_state).ravel())
             elif mode == "double":
-                next_max_action = np.argmax(
-                    self.ddqn.predict(next_state).ravel())
-                q[record["action"]] = record["reward"] + \
-                    (1 - record["terminal"]) * GAMMA * \
-                    self.ddqn_target.predict(next_state).ravel()[next_max_action]
+                next_max_action = np.argmax(self.ddqn_eval.predict(next_state).ravel())
+                next_q = self.ddqn_target.predict(next_state).ravel()[next_max_action]
+
+            q[record["action"]] = record["reward"] + (1 - record["terminal"]) * GAMMA * next_q
 
             q_values.append(q)
 

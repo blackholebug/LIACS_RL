@@ -173,11 +173,10 @@ class FrameStack(gym.Wrapper):
 
 
 class ChannelsFirstImageShape(gym.ObservationWrapper):
-    """
-    Change image shape to CWH
-    """
-
     def __init__(self, env):
+        """
+        Change image shape to CWH
+        """
         super(ChannelsFirstImageShape, self).__init__(env)
         old_shape = self.observation_space.shape
         self.observation_space = gym.spaces.Box(
