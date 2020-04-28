@@ -74,7 +74,7 @@ class Logger():
                       x_label=x_label,
                       y_label=y_label)
 
-    def save_fig(self, input_path, output_path, small_batch_length, big_batch_length, x_label, y_label):
+    def save_fig(self, input_path, output_path, small_batch_length, x_label, y_label):
         x = []
         y = []
         with open(input_path, "r") as scores:
