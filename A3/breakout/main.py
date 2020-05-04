@@ -37,7 +37,7 @@ if __name__ == "__main__":
                 print(f"Traning of {MAX_TRAIN_STEP} steps completed!")
                 exit(0)
             action = model.get_action(state)
-            next_state, reward, terminal, info = env.step(action)
+            next_state, reward, terminal, info = env.step(action) 
             reward = np.sign(reward)
             if is_train:
                 model.memory.add_replay(
