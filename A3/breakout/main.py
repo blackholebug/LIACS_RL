@@ -16,8 +16,10 @@ if __name__ == "__main__":
     breakout_env.gen_wrapped_env()
     env = breakout_env.env
     action_space = env.action_space.n
+    observed_frames = 4
     img_size = 84
-    input_shape = (action_space, img_size, img_size)
+    img_size = 84
+    input_shape = (observed_frames, img_size, img_size)
     testing_model_path = ""
 
     # generate model
